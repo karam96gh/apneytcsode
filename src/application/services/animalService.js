@@ -212,3 +212,4 @@ class AnimalService {
     return { message: 'Image deleted successfully' };
   }
 }
+module.exports = new AnimalService();

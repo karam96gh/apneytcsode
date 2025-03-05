@@ -17,8 +17,8 @@ router.get('/', medicalCaseController.getAllMedicalCases);
 // Get a specific medical case
 router.get('/:id', medicalCaseController.getMedicalCaseById);
 
-// Update a medical case
-router.put('/:id', medicalCaseController.updateMedicalCase);
+// Update a medical case - add upload.single('image') here
+router.put('/:id', upload.single('image'), medicalCaseController.updateMedicalCase);
 
 // Delete a medical case
 router.delete('/:id', medicalCaseController.deleteMedicalCase);
