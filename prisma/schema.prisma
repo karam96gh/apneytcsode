@@ -1,0 +1,138 @@
+ 
+// This is your Prisma schema file
+// Learn more about it at https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  name        String
+  mobile      String        @unique
+  password    String
+  location    String?
+  address     String?
+  verifyCode  String?
+  isVerified  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  animals     Animal[]
+  posts       Post[]
+  medicalCases MedicalCase[]
+
+  @@map("users")
+}
+
+model Animal {
+  id          Int           @id @default(autoincrement())
+  type        String        // e.g., dog, cat, etc.
+  gender      String        // male, female
+  age         Int
+  name        String
+  userId      Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images      AnimalImage[]
+  posts       Post[]
+  medicalCases MedicalCase[]
+
+  @@map("animals")
+}
+
+model AnimalImage {
+  id          Int           @id @default(autoincrement())
+  isCover     Boolean       @default(false)
+  animalId    Int
+  image       String        // URL or file path to the image
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  animal      Animal        @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@map("animal_images")
+}
+
+model Post {
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  animalId    Int
+  image       String?       // URL or file path to the image
+  postType    String        // e.g., adoption, lost, found, etc.
+  location    String?
+  currentTime DateTime      @default(now())
+  description String        @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  animal      Animal        @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@map("posts")
+}
+
+model MedicalCase {
+  id          Int           @id @default(autoincrement())
+  description String        @db.Text
+  userId      Int
+  animalId    Int
+  currentTime DateTime      @default(now())
+  image       String?       // URL or file path to the image
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  animal      Animal        @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@map("medical_cases")
+}
+
+model Veterinary {
+  id          Int           @id @default(autoincrement())
+  name        String
+  specialty   String
+  address     String
+  location    String?
+  mobile      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("veterinaries")
+}
+
+model PetStore {
+  id          Int           @id @default(autoincrement())
+  name        String
+  mobile      String
+  address     String
+  location    String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("pet_stores")
+}
+
+model Charity {
+  id          Int           @id @default(autoincrement())
+  name        String
+  address     String
+  mobile      String
+  location    String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("charities")
+}
