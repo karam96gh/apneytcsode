@@ -35,7 +35,7 @@ model Animal {
   id          Int           @id @default(autoincrement())
   type        String        // e.g., dog, cat, etc.
   gender      String        // male, female
-  age         Int
+  age         String
   name        String
   userId      Int
   createdAt   DateTime      @default(now())
