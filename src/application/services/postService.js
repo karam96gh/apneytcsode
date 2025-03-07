@@ -95,6 +95,8 @@ class PostService {
           select: {
             id: true,
             name: true,
+            mobile: true,
+
           },
         },
         animal: {
