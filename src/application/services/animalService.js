@@ -46,10 +46,7 @@ class AnimalService {
     const animals = await prisma.animal.findMany({
       where: { userId },
       include: {
-        images: {
-          where: { isCover: true },
-          take: 1,
-        },
+        images: true,
       },
     });
 
