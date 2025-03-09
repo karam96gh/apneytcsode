@@ -94,20 +94,7 @@ class AuthService {
     }
 
     // Check if user is verified
-    if (!user.isVerified) {
-      // If not verified, resend verification code
-      const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      await prisma.user.update({
-        where: { mobile },
-        data: { verifyCode },
-      });
-      
-      // Send OTP via WhatsApp
-      await this.sendWhatsAppOTP(mobile, verifyCode);
-      
-      throw new Error('Account not verified. A new verification code has been sent to your WhatsApp.');
-    }
+  
 
     // Create JWT token
     const token = jwt.sign(
@@ -116,7 +103,7 @@ class AuthService {
         mobile: user.mobile,
       },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '7y' }
     );
 
     // Remove password from response
