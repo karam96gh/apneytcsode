@@ -1,5 +1,7 @@
 // src/application/services/charityService.js
 const prisma = require('../../infrastructure/database/prismaClient');
+const fs = require('fs');
+const path = require('path');
 
 class CharityService {
   async getAllCharities(filters = {}) {
@@ -40,7 +42,7 @@ class CharityService {
   }
 
   async createCharity(charityData) {
-    const { name, address, mobile, location } = charityData;
+    const { name, address, mobile, location, image } = charityData;
 
     // Create charity
     const charity = await prisma.charity.create({
@@ -49,6 +51,7 @@ class CharityService {
         address,
         mobile,
         location,
+        image,
       },
     });
 
@@ -56,7 +59,7 @@ class CharityService {
   }
 
   async updateCharity(charityId, charityData) {
-    const { name, address, mobile, location } = charityData;
+    const { name, address, mobile, location, image } = charityData;
 
     // Check if charity exists
     const existingCharity = await prisma.charity.findUnique({
@@ -69,15 +72,36 @@ class CharityService {
       throw new Error('Charity not found');
     }
 
+    // Build update data
+    const updateData = {
+      name,
+      address,
+      mobile,
+      location,
+    };
+
+    // Only update image if provided
+    if (image !== undefined) {
+      updateData.image = image;
+      
+      // Delete old image if exists and not a default image
+      if (existingCharity.image && !existingCharity.image.includes('default')) {
+        try {
+          const oldImagePath = path.join(__dirname, '../../../', existingCharity.image);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        } catch (error) {
+          console.error('Error deleting old image:', error);
+          // Continue with update even if deletion fails
+        }
+      }
+    }
+
     // Update charity
     const updatedCharity = await prisma.charity.update({
       where: { id: charityId },
-      data: {
-        name,
-        address,
-        mobile,
-        location,
-      },
+      data: updateData,
     });
 
     return updatedCharity;
@@ -93,6 +117,19 @@ class CharityService {
 
     if (!existingCharity) {
       throw new Error('Charity not found');
+    }
+
+    // Delete image file if exists
+    if (existingCharity.image && !existingCharity.image.includes('default')) {
+      try {
+        const imagePath = path.join(__dirname, '../../../', existingCharity.image);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      } catch (error) {
+        console.error('Error deleting charity image:', error);
+        // Continue with deletion even if file deletion fails
+      }
     }
 
     // Delete charity

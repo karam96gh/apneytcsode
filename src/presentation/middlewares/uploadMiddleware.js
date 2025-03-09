@@ -8,9 +8,12 @@ const uploadsDir = path.join(__dirname, '../../..', 'uploads');
 const animalUploadsDir = path.join(uploadsDir, 'animals');
 const postUploadsDir = path.join(uploadsDir, 'posts');
 const medicalCaseUploadsDir = path.join(uploadsDir, 'medical-cases');
+const veterinaryUploadsDir = path.join(uploadsDir, 'veterinaries'); // Add directory for veterinaries
+const petStoreUploadsDir = path.join(uploadsDir, 'pet-stores'); // Add directory for pet stores
+const charityUploadsDir = path.join(uploadsDir, 'charities'); // Add directory for charities
 
 // Create directories if they don't exist
-[uploadsDir, animalUploadsDir, postUploadsDir, medicalCaseUploadsDir].forEach(dir => {
+[uploadsDir, animalUploadsDir, postUploadsDir, medicalCaseUploadsDir, veterinaryUploadsDir, petStoreUploadsDir, charityUploadsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -28,6 +31,12 @@ const storage = multer.diskStorage({
       destinationFolder = postUploadsDir;
     } else if (req.baseUrl.includes('/medical-cases')) {
       destinationFolder = medicalCaseUploadsDir;
+    } else if (req.baseUrl.includes('/veterinaries')) {
+      destinationFolder = veterinaryUploadsDir;
+    } else if (req.baseUrl.includes('/pet-stores')) {
+      destinationFolder = petStoreUploadsDir;
+    } else if (req.baseUrl.includes('/charities')) {
+      destinationFolder = charityUploadsDir;
     }
     
     cb(null, destinationFolder);

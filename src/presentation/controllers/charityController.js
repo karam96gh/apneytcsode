@@ -1,5 +1,6 @@
 // src/presentation/controllers/charityController.js
 const charityService = require('../../application/services/charityService');
+const fs = require('fs');
 
 class CharityController {
   async getAllCharities(req, res, next) {
@@ -35,8 +36,17 @@ class CharityController {
   }
 
   async createCharity(req, res, next) {
+    let uploadedFilePath = null;
+    
     try {
-      const charityData = req.body;
+      const charityData = { ...req.body };
+      
+      // Add image URL if file was uploaded
+      if (req.file) {
+        uploadedFilePath = req.file.path;
+        charityData.image = `/uploads/charities/${req.file.filename}`;
+      }
+      
       const result = await charityService.createCharity(charityData);
       
       res.status(201).json({
@@ -45,14 +55,28 @@ class CharityController {
         data: result,
       });
     } catch (error) {
+      // Clean up uploaded file if there was an error
+      if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
+        fs.unlinkSync(uploadedFilePath);
+      }
+      
       next(error);
     }
   }
 
   async updateCharity(req, res, next) {
+    let uploadedFilePath = null;
+    
     try {
       const charityId = parseInt(req.params.id);
-      const charityData = req.body;
+      const charityData = { ...req.body };
+      
+      // Handle file upload if present
+      if (req.file) {
+        uploadedFilePath = req.file.path;
+        charityData.image = `/uploads/charities/${req.file.filename}`;
+      }
+      
       const updatedCharity = await charityService.updateCharity(charityId, charityData);
       
       res.status(200).json({
@@ -61,6 +85,11 @@ class CharityController {
         data: updatedCharity,
       });
     } catch (error) {
+      // Clean up uploaded file if there was an error
+      if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
+        fs.unlinkSync(uploadedFilePath);
+      }
+      
       next(error);
     }
   }

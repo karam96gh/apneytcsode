@@ -1,4 +1,3 @@
- 
 // This is your Prisma schema file
 // Learn more about it at https://pris.ly/d/prisma-schema
 
@@ -107,6 +106,7 @@ model Veterinary {
   address     String
   location    String?
   mobile      String
+  image       String?       // Added image field - URL or file path to the image
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -119,6 +119,7 @@ model PetStore {
   mobile      String
   address     String
   location    String?
+  image       String?       // Added image field - URL or file path to the image
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -131,6 +132,7 @@ model Charity {
   address     String
   mobile      String
   location    String?
+  image       String?       // Added image field - URL or file path to the image
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

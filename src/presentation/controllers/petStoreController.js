@@ -1,5 +1,6 @@
 // src/presentation/controllers/petStoreController.js
 const petStoreService = require('../../application/services/petStoreService');
+const fs = require('fs');
 
 class PetStoreController {
   async getAllPetStores(req, res, next) {
@@ -35,8 +36,17 @@ class PetStoreController {
   }
 
   async createPetStore(req, res, next) {
+    let uploadedFilePath = null;
+    
     try {
-      const storeData = req.body;
+      const storeData = { ...req.body };
+      
+      // Add image URL if file was uploaded
+      if (req.file) {
+        uploadedFilePath = req.file.path;
+        storeData.image = `/uploads/pet-stores/${req.file.filename}`;
+      }
+      
       const result = await petStoreService.createPetStore(storeData);
       
       res.status(201).json({
@@ -45,14 +55,28 @@ class PetStoreController {
         data: result,
       });
     } catch (error) {
+      // Clean up uploaded file if there was an error
+      if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
+        fs.unlinkSync(uploadedFilePath);
+      }
+      
       next(error);
     }
   }
 
   async updatePetStore(req, res, next) {
+    let uploadedFilePath = null;
+    
     try {
       const storeId = parseInt(req.params.id);
-      const storeData = req.body;
+      const storeData = { ...req.body };
+      
+      // Handle file upload if present
+      if (req.file) {
+        uploadedFilePath = req.file.path;
+        storeData.image = `/uploads/pet-stores/${req.file.filename}`;
+      }
+      
       const updatedStore = await petStoreService.updatePetStore(storeId, storeData);
       
       res.status(200).json({
@@ -61,6 +85,11 @@ class PetStoreController {
         data: updatedStore,
       });
     } catch (error) {
+      // Clean up uploaded file if there was an error
+      if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
+        fs.unlinkSync(uploadedFilePath);
+      }
+      
       next(error);
     }
   }

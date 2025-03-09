@@ -1,5 +1,7 @@
 // src/application/services/veterinaryService.js
 const prisma = require('../../infrastructure/database/prismaClient');
+const fs = require('fs');
+const path = require('path');
 
 class VeterinaryService {
   async getAllVeterinaries(filters = {}) {
@@ -46,7 +48,7 @@ class VeterinaryService {
   }
 
   async createVeterinary(vetData) {
-    const { name, specialty, address, location, mobile } = vetData;
+    const { name, specialty, address, location, mobile, image } = vetData;
 
     // Create veterinary
     const veterinary = await prisma.veterinary.create({
@@ -56,6 +58,7 @@ class VeterinaryService {
         address,
         location,
         mobile,
+        image,
       },
     });
 
@@ -63,7 +66,7 @@ class VeterinaryService {
   }
 
   async updateVeterinary(vetId, vetData) {
-    const { name, specialty, address, location, mobile } = vetData;
+    const { name, specialty, address, location, mobile, image } = vetData;
 
     // Check if veterinary exists
     const existingVet = await prisma.veterinary.findUnique({
@@ -76,16 +79,37 @@ class VeterinaryService {
       throw new Error('Veterinary not found');
     }
 
+    // Build update data
+    const updateData = {
+      name,
+      specialty,
+      address,
+      location,
+      mobile,
+    };
+
+    // Only update image if provided
+    if (image !== undefined) {
+      updateData.image = image;
+      
+      // Delete old image if exists and not a default image
+      if (existingVet.image && !existingVet.image.includes('default')) {
+        try {
+          const oldImagePath = path.join(__dirname, '../../../', existingVet.image);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        } catch (error) {
+          console.error('Error deleting old image:', error);
+          // Continue with update even if deletion fails
+        }
+      }
+    }
+
     // Update veterinary
     const updatedVet = await prisma.veterinary.update({
       where: { id: vetId },
-      data: {
-        name,
-        specialty,
-        address,
-        location,
-        mobile,
-      },
+      data: updateData,
     });
 
     return updatedVet;
@@ -101,6 +125,19 @@ class VeterinaryService {
 
     if (!existingVet) {
       throw new Error('Veterinary not found');
+    }
+
+    // Delete image file if exists
+    if (existingVet.image && !existingVet.image.includes('default')) {
+      try {
+        const imagePath = path.join(__dirname, '../../../', existingVet.image);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      } catch (error) {
+        console.error('Error deleting veterinary image:', error);
+        // Continue with deletion even if file deletion fails
+      }
     }
 
     // Delete veterinary

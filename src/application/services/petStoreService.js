@@ -1,5 +1,7 @@
 // src/application/services/petStoreService.js
 const prisma = require('../../infrastructure/database/prismaClient');
+const fs = require('fs');
+const path = require('path');
 
 class PetStoreService {
   async getAllPetStores(filters = {}) {
@@ -40,7 +42,7 @@ class PetStoreService {
   }
 
   async createPetStore(storeData) {
-    const { name, mobile, address, location } = storeData;
+    const { name, mobile, address, location, image } = storeData;
 
     // Create pet store
     const petStore = await prisma.petStore.create({
@@ -49,6 +51,7 @@ class PetStoreService {
         mobile,
         address,
         location,
+        image,
       },
     });
 
@@ -56,7 +59,7 @@ class PetStoreService {
   }
 
   async updatePetStore(storeId, storeData) {
-    const { name, mobile, address, location } = storeData;
+    const { name, mobile, address, location, image } = storeData;
 
     // Check if pet store exists
     const existingStore = await prisma.petStore.findUnique({
@@ -69,15 +72,36 @@ class PetStoreService {
       throw new Error('Pet store not found');
     }
 
+    // Build update data
+    const updateData = {
+      name,
+      mobile,
+      address,
+      location,
+    };
+
+    // Only update image if provided
+    if (image !== undefined) {
+      updateData.image = image;
+      
+      // Delete old image if exists and not a default image
+      if (existingStore.image && !existingStore.image.includes('default')) {
+        try {
+          const oldImagePath = path.join(__dirname, '../../../', existingStore.image);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        } catch (error) {
+          console.error('Error deleting old image:', error);
+          // Continue with update even if deletion fails
+        }
+      }
+    }
+
     // Update pet store
     const updatedStore = await prisma.petStore.update({
       where: { id: storeId },
-      data: {
-        name,
-        mobile,
-        address,
-        location,
-      },
+      data: updateData,
     });
 
     return updatedStore;
@@ -93,6 +117,19 @@ class PetStoreService {
 
     if (!existingStore) {
       throw new Error('Pet store not found');
+    }
+
+    // Delete image file if exists
+    if (existingStore.image && !existingStore.image.includes('default')) {
+      try {
+        const imagePath = path.join(__dirname, '../../../', existingStore.image);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      } catch (error) {
+        console.error('Error deleting pet store image:', error);
+        // Continue with deletion even if file deletion fails
+      }
     }
 
     // Delete pet store

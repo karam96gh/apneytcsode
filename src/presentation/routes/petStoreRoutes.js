@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const petStoreController = require('../controllers/petStoreController');
 const { authenticate, isVerified } = require('../middlewares/authMiddleware');
+const upload = require('../middlewares/uploadMiddleware');
 
 // Public routes - no authentication required
 router.get('/', petStoreController.getAllPetStores);
@@ -12,11 +13,11 @@ router.get('/:id', petStoreController.getPetStoreById);
 // In a real application, you would add admin role check here
 router.use(authenticate);
 
-// Create a new pet store
-router.post('/', petStoreController.createPetStore);
+// Create a new pet store - with image upload
+router.post('/', upload.single('image'), petStoreController.createPetStore);
 
-// Update a pet store
-router.put('/:id', petStoreController.updatePetStore);
+// Update a pet store - with image upload
+router.put('/:id', upload.single('image'), petStoreController.updatePetStore);
 
 // Delete a pet store
 router.delete('/:id', petStoreController.deletePetStore);
