@@ -135,12 +135,23 @@ class AuthService {
         verifyCode: null,
       },
     });
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        mobile: user.mobile,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7y' }
+    );
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = updatedUser;
 
-    return userWithoutPassword;
-  }
+    return {
+      user: userWithoutPassword,
+      token,
+    };
+    }
 
   async resendVerifyCode(mobile) {
     const user = await prisma.user.findUnique({
