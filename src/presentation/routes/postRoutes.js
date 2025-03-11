@@ -16,7 +16,7 @@ router.use(authenticate);
 router.post('/', upload.single('image'), postController.createPost);
 
 // Update a post
-router.put('/:id', postController.updatePost);
+router.put('/:id',  upload.single('image'),postController.updatePost);
 
 // Delete a post
 router.delete('/:id', postController.deletePost);
