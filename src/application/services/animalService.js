@@ -57,7 +57,7 @@ class AnimalService {
     const animal = await prisma.animal.findFirst({
       where: {
         id: animalId,
-        userId,
+       
       },
       include: {
         images: true,
