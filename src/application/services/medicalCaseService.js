@@ -5,46 +5,15 @@ const path = require('path');
 
 class MedicalCaseService {
   async createMedicalCase(userId, caseData) {
-    const { animalId, description, image } = caseData;
+    const {title, description, image } = caseData;
     
-    // Parse animalId as integer
-    const animalIdInt = parseInt(animalId, 10);
-    
-    // Check for valid integer
-    if (isNaN(animalIdInt)) {
-      throw new Error('Invalid animal ID format');
-    }
-
-    // Check if animal exists and belongs to user
-    const animal = await prisma.animal.findFirst({
-      where: {
-        id: animalIdInt,
-        userId,
-      },
-    });
-
-    if (!animal) {
-      throw new Error('Animal not found or not owned by user');
-    }
-
-    // Create medical case
+    // Create medical case without animal relation
     const medicalCase = await prisma.medicalCase.create({
       data: {
         userId,
-        animalId: animalIdInt,
+        title,
         description,
         image,
-      },
-      include: {
-        animal: {
-          select: {
-            id: true,
-            name: true,
-            type: true,
-            gender: true,
-            age: true,
-          },
-        },
       },
     });
 
@@ -53,26 +22,8 @@ class MedicalCaseService {
 
   async getAllMedicalCases(userId) {
     const medicalCases = await prisma.medicalCase.findMany({
-      where: {
-        userId,
-      },
       orderBy: {
         currentTime: 'desc',
-      },
-      include: {
-        animal: {
-          select: {
-            id: true,
-            name: true,
-            type: true,
-            images: {
-              where: {
-                isCover: true,
-              },
-              take: 1,
-            },
-          },
-        },
       },
     });
 
@@ -92,18 +43,6 @@ class MedicalCaseService {
       where: {
         id: caseIdInt,
         userId,
-      },
-      include: {
-        animal: {
-          include: {
-            images: {
-              where: {
-                isCover: true,
-              },
-              take: 1,
-            },
-          },
-        },
       },
     });
 
@@ -163,18 +102,9 @@ class MedicalCaseService {
 
     // Only update if there are changes
     if (Object.keys(updateData).length === 0) {
-      // No changes, return existing medical case with proper includes
+      // No changes, return existing medical case
       return await prisma.medicalCase.findUnique({
         where: { id: caseIdInt },
-        include: {
-          animal: {
-            select: {
-              id: true,
-              name: true,
-              type: true,
-            },
-          },
-        },
       });
     }
 
@@ -182,15 +112,6 @@ class MedicalCaseService {
     const updatedCase = await prisma.medicalCase.update({
       where: { id: caseIdInt },
       data: updateData,
-      include: {
-        animal: {
-          select: {
-            id: true,
-            name: true,
-            type: true,
-          },
-        },
-      },
     });
 
     return updatedCase;
@@ -236,39 +157,6 @@ class MedicalCaseService {
     });
 
     return { message: 'Medical case deleted successfully' };
-  }
-
-  async getAnimalMedicalCases(animalId, userId) {
-    // Parse animalId as integer
-    const animalIdInt = parseInt(animalId, 10);
-    
-    // Check for valid integer
-    if (isNaN(animalIdInt)) {
-      throw new Error('Invalid animal ID format');
-    }
-    
-    // Check if animal exists and belongs to user
-    const animal = await prisma.animal.findFirst({
-      where: {
-        id: animalIdInt,
-        userId,
-      },
-    });
-
-    if (!animal) {
-      throw new Error('Animal not found or not owned by user');
-    }
-
-    const medicalCases = await prisma.medicalCase.findMany({
-      where: {
-        animalId: animalIdInt,
-      },
-      orderBy: {
-        currentTime: 'desc',
-      },
-    });
-
-    return medicalCases;
   }
 }
 

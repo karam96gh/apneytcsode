@@ -44,7 +44,6 @@ model Animal {
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   images      AnimalImage[]
   posts       Post[]
-  medicalCases MedicalCase[]
 
   @@map("animals")
 }
@@ -85,8 +84,9 @@ model Post {
 model MedicalCase {
   id          Int           @id @default(autoincrement())
   description String        @db.Text
+  title String        @db.Text
+
   userId      Int
-  animalId    Int
   currentTime DateTime      @default(now())
   image       String?       // URL or file path to the image
   createdAt   DateTime      @default(now())
@@ -94,7 +94,6 @@ model MedicalCase {
 
   // Relations
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  animal      Animal        @relation(fields: [animalId], references: [id], onDelete: Cascade)
 
   @@map("medical_cases")
 }
