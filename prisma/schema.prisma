@@ -84,7 +84,7 @@ model Post {
 model MedicalCase {
   id          Int           @id @default(autoincrement())
   description String        @db.Text
-  title String        @db.Text @default('title')
+  title       String   @db.Text @default("title")  // Fixed: added spaces after field name and used double quotes
 
   userId      Int
   currentTime DateTime      @default(now())
