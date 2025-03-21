@@ -56,6 +56,7 @@ class MedicalCaseService {
   async updateMedicalCase(caseId, userId, caseData) {
     // Parse caseId as integer
     const caseIdInt = parseInt(caseId, 10);
+    console.log(caseData);
     
     // Check for valid integer
     if (isNaN(caseIdInt)) {
