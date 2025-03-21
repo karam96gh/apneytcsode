@@ -1,6 +1,7 @@
 // src/presentation/controllers/medicalCaseController.js
 const medicalCaseService = require('../../application/services/medicalCaseService');
 const fs = require('fs');
+const { use } = require('../routes/medicalCaseRoutes');
 
 class MedicalCaseController {
   async createMedicalCase(req, res, next) {
@@ -96,7 +97,7 @@ class MedicalCaseController {
       const userId = req.user.id;
       const caseId = req.params.id;
       const caseData = { ...req.body };
-      
+      console.log(userId);
       // Handle file upload if present
       if (req.file) {
         uploadedFilePath = req.file.path;
