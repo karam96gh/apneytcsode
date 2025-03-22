@@ -57,6 +57,8 @@ class MedicalCaseService {
     // Parse caseId as integer
     const caseIdInt = parseInt(caseId, 10);
     console.log(caseData);
+    console.log(caseIdInt);
+
     
     // Check for valid integer
     if (isNaN(caseIdInt)) {
