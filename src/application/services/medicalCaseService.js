@@ -84,6 +84,9 @@ class MedicalCaseService {
     if (caseData.description !== undefined && caseData.description !== existingCase.description) {
       updateData.description = caseData.description;
     }
+    if (caseData.title !== undefined && caseData.title !== existingCase.title) {
+      updateData.title = caseData.title;
+    }
     
     // Handle image update separately
     if (caseData.image !== undefined && caseData.image !== existingCase.image) {
