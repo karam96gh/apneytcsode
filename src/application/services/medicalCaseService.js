@@ -70,7 +70,7 @@ class MedicalCaseService {
         userId,
       },
     });
-
+  console.log(existingCase);
     if (!existingCase) {
       throw new Error('Medical case not found or not owned by user');
     }
