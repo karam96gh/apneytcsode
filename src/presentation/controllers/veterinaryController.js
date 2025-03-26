@@ -40,7 +40,14 @@ class VeterinaryController {
     
     try {
       const vetData = { ...req.body };
-      
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       // Add image URL if file was uploaded
       if (req.file) {
         uploadedFilePath = req.file.path;
@@ -70,7 +77,14 @@ class VeterinaryController {
     try {
       const vetId = parseInt(req.params.id);
       const vetData = { ...req.body };
-      
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       // Handle file upload if present
       if (req.file) {
         uploadedFilePath = req.file.path;
@@ -97,6 +111,14 @@ class VeterinaryController {
   async deleteVeterinary(req, res, next) {
     try {
       const vetId = parseInt(req.params.id);
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       await veterinaryService.deleteVeterinary(vetId);
       
       res.status(200).json({

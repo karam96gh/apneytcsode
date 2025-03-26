@@ -40,7 +40,14 @@ class CharityController {
     
     try {
       const charityData = { ...req.body };
-      
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       // Add image URL if file was uploaded
       if (req.file) {
         uploadedFilePath = req.file.path;
@@ -66,7 +73,14 @@ class CharityController {
 
   async updateCharity(req, res, next) {
     let uploadedFilePath = null;
-    
+    const userId = req.user.id;
+    if(userId!=26)
+    {
+      res.status(400).json({
+        success: false,
+        message: 'not admin',
+      });
+    }
     try {
       const charityId = parseInt(req.params.id);
       const charityData = { ...req.body };
@@ -97,6 +111,14 @@ class CharityController {
   async deleteCharity(req, res, next) {
     try {
       const charityId = parseInt(req.params.id);
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       await charityService.deleteCharity(charityId);
       
       res.status(200).json({

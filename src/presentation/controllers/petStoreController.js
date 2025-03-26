@@ -41,7 +41,6 @@ class PetStoreController {
     try {
       const storeData = { ...req.body };
       const userId = req.user.id;
-      console.log(userId);
       if(userId!=26)
       {
         res.status(400).json({
@@ -80,7 +79,14 @@ class PetStoreController {
     try {
       const storeId = parseInt(req.params.id);
       const storeData = { ...req.body };
-      
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       // Handle file upload if present
       if (req.file) {
         uploadedFilePath = req.file.path;
@@ -107,6 +113,16 @@ class PetStoreController {
   async deletePetStore(req, res, next) {
     try {
       const storeId = parseInt(req.params.id);
+
+
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+        });
+      }
       await petStoreService.deletePetStore(storeId);
       
       res.status(200).json({
