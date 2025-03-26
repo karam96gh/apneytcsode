@@ -40,8 +40,16 @@ class PetStoreController {
     
     try {
       const storeData = { ...req.body };
-      
-      // Add image URL if file was uploaded
+      const userId = req.user.id;
+      if(userId!=26)
+      {
+        res.status(400).json({
+          success: false,
+          message: 'not admin',
+          data: result,
+        });
+      }
+      // }Add image URL if file was uploaded
       if (req.file) {
         uploadedFilePath = req.file.path;
         storeData.image = `/uploads/pet-stores/${req.file.filename}`;
@@ -62,7 +70,9 @@ class PetStoreController {
       
       next(error);
     }
+    
   }
+
 
   async updatePetStore(req, res, next) {
     let uploadedFilePath = null;
