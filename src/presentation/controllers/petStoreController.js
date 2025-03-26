@@ -41,6 +41,7 @@ class PetStoreController {
     try {
       const storeData = { ...req.body };
       const userId = req.user.id;
+      console.log(userId);
       if(userId!=26)
       {
         res.status(400).json({
