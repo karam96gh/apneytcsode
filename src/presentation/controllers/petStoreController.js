@@ -46,7 +46,6 @@ class PetStoreController {
         res.status(400).json({
           success: false,
           message: 'not admin',
-          data: result,
         });
       }
       // }Add image URL if file was uploaded
