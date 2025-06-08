@@ -134,7 +134,7 @@ class AdvertisementService {
 
     if (link !== undefined) updateData.link = link;
     if (priority !== undefined) updateData.priority = parseInt(priority, 10); // Convert to integer
-    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true; // Convert to boolean
 
     // التعامل مع تحديث الصورة
     if (image !== undefined) {
