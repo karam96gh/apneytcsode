@@ -137,3 +137,20 @@ model Charity {
 
   @@map("charities")
 }
+// إضافة نموذج الإعلانات إلى schema.prisma
+
+model Advertisement {
+  id          Int           @id @default(autoincrement())
+  image       String        // رابط الصورة - مطلوب
+  link        String?       // الرابط الخارجي (اختياري)
+  isActive    Boolean       @default(true)
+  startDate   DateTime      @default(now())
+  endDate     DateTime      // تاريخ انتهاء الإعلان
+  priority    Int           @default(1) // أولوية الإعلان (للترتيب)
+  clicks      Int           @default(0) // عدد النقرات
+  views       Int           @default(0) // عدد المشاهدات
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("advertisements")
+}

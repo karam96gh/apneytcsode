@@ -1,4 +1,4 @@
-// src/presentation/middlewares/uploadMiddleware.js
+// src/presentation/middlewares/uploadMiddleware.js - تحديث لإضافة مجلد الإعلانات
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
@@ -8,12 +8,13 @@ const uploadsDir = path.join(__dirname, '../../..', 'uploads');
 const animalUploadsDir = path.join(uploadsDir, 'animals');
 const postUploadsDir = path.join(uploadsDir, 'posts');
 const medicalCaseUploadsDir = path.join(uploadsDir, 'medical-cases');
-const veterinaryUploadsDir = path.join(uploadsDir, 'veterinaries'); // Add directory for veterinaries
-const petStoreUploadsDir = path.join(uploadsDir, 'pet-stores'); // Add directory for pet stores
-const charityUploadsDir = path.join(uploadsDir, 'charities'); // Add directory for charities
+const veterinaryUploadsDir = path.join(uploadsDir, 'veterinaries');
+const petStoreUploadsDir = path.join(uploadsDir, 'pet-stores');
+const charityUploadsDir = path.join(uploadsDir, 'charities');
+const advertisementUploadsDir = path.join(uploadsDir, 'advertisements'); // إضافة مجلد الإعلانات
 
 // Create directories if they don't exist
-[uploadsDir, animalUploadsDir, postUploadsDir, medicalCaseUploadsDir, veterinaryUploadsDir, petStoreUploadsDir, charityUploadsDir].forEach(dir => {
+[uploadsDir, animalUploadsDir, postUploadsDir, medicalCaseUploadsDir, veterinaryUploadsDir, petStoreUploadsDir, charityUploadsDir, advertisementUploadsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -37,6 +38,8 @@ const storage = multer.diskStorage({
       destinationFolder = petStoreUploadsDir;
     } else if (req.baseUrl.includes('/charities')) {
       destinationFolder = charityUploadsDir;
+    } else if (req.baseUrl.includes('/advertisements')) {
+      destinationFolder = advertisementUploadsDir;
     }
     
     cb(null, destinationFolder);
@@ -53,12 +56,6 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   // Accept only image files
   cb(null, true);
-
-  // if (file.mimetype.startsWith('image/')) {
-  //   cb(null, true);
-  // } else {
-  //   cb(new Error('Only image files are allowed!'), false);
-  // }
 };
 
 // Create multer upload instance
