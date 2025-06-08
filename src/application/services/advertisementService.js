@@ -25,7 +25,7 @@ class AdvertisementService {
         link,
         startDate: startDate ? new Date(startDate) : new Date(),
         endDate: endDateTime,
-        priority: priority || 1,
+        priority: priority ? parseInt(priority, 10) : 1, // Convert to integer
       },
     });
 
@@ -133,7 +133,7 @@ class AdvertisementService {
     const updateData = {};
 
     if (link !== undefined) updateData.link = link;
-    if (priority !== undefined) updateData.priority = priority;
+    if (priority !== undefined) updateData.priority = parseInt(priority, 10); // Convert to integer
     if (isActive !== undefined) updateData.isActive = isActive;
 
     // التعامل مع تحديث الصورة
