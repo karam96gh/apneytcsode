@@ -208,22 +208,28 @@ class AdvertisementService {
   }
 
   async recordClick(adId) {
-    // التحقق من وجود الإعلان والتأكد من أنه نشط
-    const advertisement = await prisma.advertisement.findFirst({
-      where: {
-        id: adId,
-        isActive: true,
-        startDate: {
-          lte: new Date(),
-        },
-        endDate: {
-          gte: new Date(),
-        },
-      },
+    const currentDate = new Date();
+    
+    // First, check if the advertisement exists at all
+    const advertisement = await prisma.advertisement.findUnique({
+      where: { id: adId },
     });
 
     if (!advertisement) {
-      throw new Error('Advertisement not found or expired');
+      throw new Error('Advertisement not found');
+    }
+
+    // Check each condition separately for better error messages
+    if (!advertisement.isActive) {
+      throw new Error('Advertisement is not active');
+    }
+
+    if (advertisement.startDate > currentDate) {
+      throw new Error('Advertisement has not started yet');
+    }
+
+    if (advertisement.endDate < currentDate) {
+      throw new Error('Advertisement has expired');
     }
 
     // زيادة عدد النقرات
